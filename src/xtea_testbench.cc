@@ -58,7 +58,7 @@ void xtea_testbench::decrypt(sc_uint<32> a, sc_uint<32> b)
 
 void xtea_testbench::run()
 {
-    sc_uint<32> values[2] = { 0x12345678, 0x9abcdeff }, encryptedValues[2], decryptedValues[2]; 
+    sc_uint<32> values[2] = { 0xc1a0c1a0, 0xdeadbeff }, encryptedValues[2], decryptedValues[2]; 
     sc_uint<32> keys[4] = { 0x6a1d78c8, 0x8c86d67f, 0x2a65bfbe, 0xb4bd6e46 };
 
     // Comando il reset del modulo
@@ -78,7 +78,7 @@ void xtea_testbench::run()
     encryptedValues[1] = result2.read();
 
     cout << "Avvio la decriptazione" << endl;
-    decrypt(values[0], values[1]);
+    decrypt(encryptedValues[0], encryptedValues[1]);
     decryptedValues[0] = result1.read();
     decryptedValues[1] = result2.read();
 

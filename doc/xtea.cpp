@@ -22,7 +22,6 @@ void logo(){
   printf("    |     |\n");
   printf("   : .___, :\n");
   printf("    `-----'\n\n\n");
-  
 }
 
 void xtea (uint32_t word0, uint32_t word1, uint32_t key0, 
@@ -67,10 +66,10 @@ void xtea (uint32_t word0, uint32_t word1, uint32_t key0,
       uint32_t acc2 = (((v0 << 4) ^ (v0 >> 5)) + v0) ^ (sum + temp);
       v1 += acc2;
 
-      cout << "Iterazione " << std::dec << i << ": " << std::hex 
-        << v0 << " "
-        << v1 << "; acc1 " << acc1 
-        << "; acc2 " << acc2 << "; sum " << sum << "; temp " << temp << endl; 
+      // cout << "Iterazione " << std::dec << i << ": " << std::hex 
+      //   << v0 << " "
+      //   << v1 << "; acc1 " << acc1 
+      //   << "; acc2 " << acc2 << "; sum " << sum << "; temp " << temp << endl; 
     } 
   }
   
@@ -102,7 +101,7 @@ void xtea (uint32_t word0, uint32_t word1, uint32_t key0,
       
       v0 -= (((v1 << 4) ^ (v1 >> 5)) + v1) ^ (sum + temp);
       
-      cout << "Iterazione " << std::dec << i << ": " << std::hex << v0 << " " << std::hex << v1 << endl; 
+      //cout << "Iterazione " << std::dec << i << ": " << std::hex << v0 << " " << std::hex << v1 << endl; 
     }                                           
   }
   *result0 = v0; 

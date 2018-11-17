@@ -2,6 +2,7 @@
 #define XTEA_HH_
 
 #include "systemc.h"
+#include <iomanip>
 
 #define DELTA 0x9e3779b9
 #define N_ITERATIONS 32
@@ -33,6 +34,8 @@ private:
     void fsm();
 
     void datapath();
+
+    void print();
 
     // =========================================================
     // Questi segnali sono comandati esclusivamente dal datapath
