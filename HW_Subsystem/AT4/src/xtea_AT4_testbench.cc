@@ -79,7 +79,7 @@ void xtea_AT4_testbench::run()
 	wait(available_response);
 	response_pending = false;
 
-	for (size_t i = 0; i < 1000; i++){
+	for (size_t i = 0; i < TESTBENCH_ITERATION; i++){
 
         // Valori in input ed output dalle transazioni
         uint32_t values[2], enc[2], dec[2];

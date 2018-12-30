@@ -75,7 +75,6 @@ void xtea_LT_testbench::run()
 
         quantumKeeper.set(local_time);
         if (quantumKeeper.need_sync()) {
-            cout << "SYNCHRONIZING" << endl;
             quantumKeeper.sync();
         }
     }

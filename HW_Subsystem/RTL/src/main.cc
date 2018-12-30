@@ -47,6 +47,7 @@ int main()
     module_xtea_testbench.result2(result2);
     module_xtea_testbench.outputReady(outputReady);
 
+    /*
     trace = sc_create_vcd_trace_file("xtea_trace");
     sc_trace(trace, clock, "clock");
     sc_trace(trace, reset, "reset");
@@ -56,7 +57,7 @@ int main()
     sc_trace(trace, inputReady, "inputReady");
     sc_trace(trace, result1, "result1");
     sc_trace(trace, result2, "result2");
-    sc_trace(trace, outputReady, "outputReady");
+    sc_trace(trace, outputReady, "outputReady"); */
 
     sc_start();
     return 0;

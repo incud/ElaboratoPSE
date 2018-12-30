@@ -5,7 +5,7 @@
 #include "tlm.h"
 #include "define_UT.hh"
 
-#define TESTBENCH_ITERATION 1000
+#define TESTBENCH_ITERATION 1000000
 
 class xtea_UT_testbench : 
     public sc_module,

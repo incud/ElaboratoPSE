@@ -5,8 +5,6 @@
 #include "tlm.h"
 #include "define_LT.hh"
 
-#define TESTBENCH_ITERATION 1000
-
 class xtea_LT : 
     public sc_module, 
     public virtual tlm::tlm_fw_transport_if<> 

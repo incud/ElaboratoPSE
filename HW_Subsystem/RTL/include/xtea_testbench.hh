@@ -7,7 +7,7 @@
 
 extern void close_trace_files();
 
-#define TESTBENCH_ITERATION 1000
+#define TESTBENCH_ITERATION 1000000
 
 SC_MODULE(xtea_testbench) {
 

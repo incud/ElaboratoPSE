@@ -5,6 +5,8 @@
 #include <tlm.h>
 #include "define_AT4.hh"
 
+#define TESTBENCH_ITERATION 1000000
+
 class xtea_AT4_testbench : public sc_module, public virtual tlm::tlm_bw_transport_if<>
 {
 private:

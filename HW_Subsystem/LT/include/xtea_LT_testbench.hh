@@ -6,7 +6,7 @@
 #include "tlm_utils/tlm_quantumkeeper.h"
 #include "define_LT.hh"
 
-#define TESTBENCH_ITERATION 1000
+#define TESTBENCH_ITERATION 1000000
 
 class xtea_LT_testbench : 
     public sc_module,
