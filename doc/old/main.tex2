@@ -1,0 +1,116 @@
+\documentclass[]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage{float, graphicx, booktabs}
+\usepackage{amsmath}
+\usepackage[italian]{babel}
+
+\title{Cifrario eXtended TEA}
+\author{Massimiliano Incudini - VR433300}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+    EIEIEIEIEIEI
+\end{abstract}
+
+\section{Introduzione}
+
+\section{Background}
+
+\section{Metodologia applicata}
+
+Lo sviluppo del cifrario è partito dall'analisi dell'algoritmo ad alto livello fornito. L'implementazione delle diverse versioni del cifrario sono state implementate nell'ordine in cui sono state assegnate in classe:
+\begin{itemize}
+    \item in primo luogo è stata sviluppata la versione RTL;
+    \item in secondo luogo sono state sviluppate le versioni TLM;
+    \item infine è stata sviluppata la versione che include SystemC AMS.
+\end{itemize}
+
+\section{Analisi dell'algoritmo}
+
+La prima versione del cifratore (RTL) viene implementata a partire dal sorgente fornito. E' possibile consultarne una versione simile in \cite{wiki}. Il primo compito svolto è stato schematizzare il codice in un diagramma di flusso (Figura~\ref{fig:algo}). 
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{scheme/algo.png}
+    \caption{Algoritmo ad alto livello del cifratore. NB: La funzione $f(a,b,c)$ è un'espressione che corrisponde a $(((a \ll 4) \oplus (a \gg 5)) + a) \oplus (b + c)$.}
+    \label{fig:algo}
+\end{figure}
+
+Questo permette di estrarre gli input e gli output che servono al modulo per funzionare. In primo luogo la soluzione è stata scegliere l'interfaccia in Figura~\ref{fig:interface}. Come si può vedere, prende in input tutti i dati dello schema: la chiave, i dati da elaborare, la modalità di esecuzione.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.35\textwidth]{scheme/interface.png}
+    \caption{Interfaccia iniziale}
+    \label{fig:interface}
+\end{figure}
+
+In realtà l'interfaccia risulta grossolana: il cifratore probabilmente dovrà elaborare un discreto numero di dati utilizzando sempre la stessa chiave (intesa come il gruppo di 128 bit). Risulta inutile passarla sempre quando per la maggior parte delle computazioni questa rimarrà identica. Si sceglie quindi di togliere l'input relativo alla chiave. Questa verrà passata all'inizio della computazione utilizzando la porta \texttt{data}. Poichè la porta \texttt{data} è di 64bit e la chiave è grande il doppio, occorrerà passarla in due volte. Otteniamo lo schema in Figura~\ref{fig:interface2}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.35\textwidth]{scheme/interface2.png}
+    \caption{Interfaccia finale}
+    \label{fig:interface2}
+\end{figure}
+
+Le porte hanno il seguente significato:
+\begin{itemize}
+    \item \texttt{clock} (in input);
+    \item \texttt{reset} (in input): quando attivo alto, riporta il modulo allo stato iniziale;
+    \item \texttt{command} (in input, 2bit): comando da eseguire sul modulo;
+    \item \texttt{data} (in input, 64bit): valore da processare;
+    \item \texttt{input\_ready} (in input): quando attivo alto, si possono leggere i dati in input;
+    \item \texttt{result} (in output, 64bit): risultato della computazione;
+    \item \texttt{output\_ready} (in output): quando è attivo alto, la computazione è terminata;
+\end{itemize}
+
+L'azione corrispondente ai valori forniti in input è presente in Tabella~\ref{tab:azioni}. Una volta che il modulo ha finito la computazione, viene attivato il segnale \texttt{output\_ready} e viene mantenuto attivo un solo ciclo di clock. Durante questo periodo di tempo si può leggere il valore della porta \texttt{result}.
+
+\begin{table*}[htbp]
+    \centering
+    \begin{tabular}{lllp{5cm}}
+        \toprule
+        reset & input\_ready & command & azione \\ \cmidrule{1-4}
+         \texttt{1} & \texttt{-} & \texttt{--} &	riporta il sistema allo stato iniziale
+        \\ \texttt{0} & \texttt{0} & \texttt{--} &	non fare nulla
+        \\ \texttt{0} & \texttt{1} & \texttt{00} &	memorizza il valore su data all’interno del sistema come i primi 64bit della chiave
+        \\ \texttt{0} & \texttt{1} & \texttt{01} &	memorizza il valore su data all’interno del sistema come i secondi 64bit della chiave
+        \\ \texttt{0} & \texttt{1} & \texttt{10} &	avvia la criptazione, il messaggio è il valore su data
+        \\ \texttt{0} & \texttt{1} & \texttt{11} &	avvia la decriptazione, il messaggio è il valore su data \\ \bottomrule
+    \end{tabular}
+    \caption{Tabella delle azioni}
+    \label{tab:azioni}
+\end{table*}
+
+\section{Implementazione RTL}
+
+Si è deciso di dividere il modulo in due funzioni separate: una funzione è \texttt{fsm} e l'altra \texttt{datapath}. La prima ha il compito di leggere i dati in input e memorizzarli all'interno del modulo, scandire l'avanzamento della computazione modificando la variabile di stato, e scrivere i valori in output. La seconda si occupa di elaborare espressioni aritmetiche anche semplici. 
+
+Si può notare nell'algoritmo in Figura~\ref{fig:algo} che buona parte dei due blocchi più grandi, quelli contenenti i calcoli, si sovrappone. Per questo il modulo cercherà di sfruttare quando può questa sovrapposizione per minimizzare l'area (del datapath, nella quale vengono effettuate queste computazioni). 
+
+Inoltre le operazioni $\text{index} = x \text{\&} 3, \; \text{index} = (x \gg 11) \text{\&} 3$ usate per calcolare quale parte di chiave si traducono in una semplice estrazione di bit dall'operando, quindi non serve passare dal datapath.
+
+Il compito della FSM è legge gli input e li salva all'interno delle propri registri, gestisce lo stato, comunica col datapath e scrive gli output. Il datapath legge i dati dai registri della FSM e li sposta nei propri registri effettua le operazioni aritmetiche. In Figura~\ref{fig:internal} puoi vedere la mappa dei registri. 
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{scheme/internal.png}
+    \caption{Registri interni al modulo}
+    \label{fig:internal}
+\end{figure}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{scheme/efsm.png}
+    \caption{Diagramma degli stati. Le transazioni sono comandate dalla FSM. In verde sono presenti le elaborazioni fatte dal datapath}
+    \label{fig:efsm}
+\end{figure*}
+
+\bibliographystyle{IEEEtran}
+\bibliography{biblio}
+
+\end{document}
