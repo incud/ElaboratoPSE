@@ -1,0 +1,31 @@
+\section{Sintesi in Vivado}
+
+I sorgenti utilizzati all'interno di \tool{Modelsim} vengono importati in \tool{Xilinx Vivado}. 
+
+Il modulo viene testato ora attraverso un modulo testbench \code{xtea_tb.vhd}. Questo mima il comportamento del file di stimoli ma in modo più agevole, poichè il linguaggio VHDL permette istruzioni \mintinline{vhdl}{wait port'event and port = '1'} che permettono di aspettare indefinitamente l'evento su una porta prima di proseguire con il resto del codice, anzichè obbligarci a fare i calcoli della temporizzazione a mano. 
+
+Una volta che abbiamo appurato il corretto funzionamento del modulo, procediamo con la sintesi. Il modulo viene sintetizzato per la piattaforma PYNQ con codice \code{xc7z020clg400-1}. Il modulo risulta sintetizzabile, e le risorse utilizzate risultano quelle di Tabella~\ref{tab:utilizzo}.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{l S[table-format=3.0] S[table-format=3.0] S[table-format=6.0] S[table-format=0.2] }
+        \toprule
+        {Site Type}        	    & {Used}     & {Fixed} 	 & {Available} 	  & {Util (\%)} \\ \midrule
+ Slice LUTs*             	    & 486	     &     0	 &    53200	      & 0.91 \\
+ \quad LUT as Logic          	& 486	     &     0	 &    53200	      & 0.91 \\
+ \quad LUT as Memory         	& 0	         &     0	 &    17400	      & 0.00 \\
+ Slice Registers         	    & 441	     &     0	 &    106400	  & 0.41 \\
+ \quad Register as Flip Flop 	& 15	     &     0	 &    106400	  & 0.01 \\
+ \quad Register as Latch     	& 426	     &     0	 &    106400	  & 0.40 \\
+ F7 Muxes                	    & 0	         &     0	 &    26600	      & 0.00 \\
+ F8 Muxes                	    & 0	         &     0	 &    13300	      & 0.00 \\\bottomrule
+    \end{tabular}
+    \caption{Utilizzo delle componenti di \code{xtea}}
+    \label{tab:utilizzo}
+\end{table}
+
+L'implementazione su FPGA risulta invece un problema col design attuale. Infatti la scheda seleziona permette di poter solamente 125 porte di input/output mentre per il nostro modello ne servono 135. Se volessimo utilizzare il modulo come sistema standalone sulla scheda, dobbiamo trovare il modo di ridurre il numero di IO. Una soluzione semplice è implementare un componente wrapper di \code{xtea}, con porte dati più piccole, che passano i valori al nostro modulo in più cicli di clock (\code{input_ready} viene messo a 1 solo quando il valore è stato salvato completamente).
+
+Viene fatta l'implementazione di questo componente all'interno del file \code{xtea_s2p.vhd}. L'implementazione avviene correttamente, e le porte di IO usate sono 38.
+
+In ogni caso, si presuppone che il cifratore sia inserito all'interno di un sistema embedded più ampio, quindi il problema del numero di porte in realtà è meno grave di quanto ipotizzato inizialmente.

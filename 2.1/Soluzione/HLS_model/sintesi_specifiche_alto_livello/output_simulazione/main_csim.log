@@ -1,0 +1,29 @@
+INFO: [SIM 2] *************** CSIM start ***************
+INFO: [SIM 4] CSIM will launch GCC as the compiler.
+   Compiling ../../xtea_tb.cpp in debug mode
+   Compiling ../../xtea.cpp in debug mode
+   Generating csim.exe
+
+     (((       
+     ((((     XTEA - eXtended Tiny Encryption Algorithm
+     ))))       * Design of Embedded Systems Course
+  _ .----.      * 2018-2019
+  ( |`---'|     
+    |     |
+   : .___, :
+    `-----'
+
+
+First invocation: 
+   - the encryption of 12345678 and 9abcdeff 
+   - with key 6a1d78c88c86d67f2a65bfbeb4bd6e46 
+is: 99bbb92b, 3ebd1644 
+
+Second invocation: 
+   - the decryption of 99bbb92b and 3ebd1644 
+   - with key 6a1d78c88c86d67f2a65bfbeb4bd6e46 
+is: 12345678, 9abcdeff 
+
+Done!!
+INFO: [SIM 1] CSim done with 0 errors.
+INFO: [SIM 3] *************** CSIM finish ***************

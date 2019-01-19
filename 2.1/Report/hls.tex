@@ -1,0 +1,51 @@
+\section{Sintesi ad alto livello con Vivado HLS}
+
+Proviamo ad importare il file di specifiche del modulo all'interno di \textsf{Vivado HLS}. L'unico file fornito viene diviso in un sorgente ed in un testbench (quest'ultimo contiene la sola funzione \code{main}). 
+
+Per testare la correttezza delle specifiche avviamo la simulazione del codice C. Il risultato è corretto e ne segue il log (stampa del logo omessa):
+\begin{minted}[fontsize=\footnotesize]{text}
+INFO: [SIM 2] *************** CSIM start ***************
+INFO: [SIM 4] CSIM will launch GCC as the compiler.
+   Compiling ../../xtea_tb.cpp in debug mode
+   Compiling ../../xtea.cpp in debug mode
+   Generating csim.exe
+First invocation: 
+   - the encryption of 12345678 and 9abcdeff 
+   - with key 6a1d78c88c86d67f2a65bfbeb4bd6e46 
+   is: 99bbb92b, 3ebd1644 
+Second invocation: 
+   - the decryption of 99bbb92b and 3ebd1644 
+   - with key 6a1d78c88c86d67f2a65bfbeb4bd6e46 
+   is: 12345678, 9abcdeff 
+Done!!
+INFO: [SIM 1] CSim done with 0 errors.
+INFO: [SIM 3] *************** CSIM finish ***************
+\end{minted}
+
+Infine avviamo la sintesi. In output abbiamo un file \code{xtea.vhd}. Questo viene importato in \textsf{Vivado} e sintetizzato. La sintesi ha esito positivo. L'implementazione ha esito negativo sempre a causa del numero di IO. 
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{l S[table-format=3.0] S[table-format=3.0] }
+        \toprule
+        {Site Type}        	    & {VHDL RTL} & {Specifiche C++} \\ \midrule
+ Slice LUTs              	    & 486	     &    696	 \\
+ \quad LUT as Logic          	& 486	     &    696	 \\
+ \quad LUT as Memory         	& 0	         &    0      \\
+ Slice Registers         	    & 441	     &    606    \\
+ \quad Register as Flip Flop 	& 15	     &    606    \\
+ \quad Register as Latch     	& 426	     &    0      \\
+ F7 Muxes                	    & 0	         &    0	     \\
+ F8 Muxes                	    & 0	         &    0	     \\ \bottomrule
+    \end{tabular}
+    \caption{Confronto}
+    \label{tab:confronto}
+\end{table}
+
+\section{Conclusioni}
+
+La Tabella~\ref{tab:confronto} confronta l'utilizzo di componenti delle varie versioni del modulo.
+
+Vediamo come la versione VHDL occupa circa il 15\% delle risorse (porte logiche, memoria) rispetto alla versione sintetizzata a partire dalle specifiche. La perdita di spazio è in realtà irrisoria rispetto al tempo perso per implementare il VHDL, quindi è abbastanza ovvio che questa prima versione è da preferirsi. 
+
+Infine notiamo come la versione VHDL utilizzi un certo numero di latch invece che flip-flops, sintomo esiste un processo in cui uno o più segnali vengono scritti in alcuni branch mentre in altri no. Questo difetto è prodotto da una svista del programmatore. Nella versione sintetizzata questi problemi non compaiono.

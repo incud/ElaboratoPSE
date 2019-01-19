@@ -1,0 +1,39 @@
+\documentclass[]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage{float, graphicx, booktabs, siunitx}
+\usepackage{microtype, amsmath, minted, siunitx}
+
+\usepackage{inconsolata}
+\usepackage[italian]{babel}
+
+\newcommand{\tool}[1]{\textsf{#1}}
+\newcommand{\code}[1]{\mintinline{text}{#1}}
+
+\title{Modellazione in VHDL di un cifrario basato su algoritmo XTEA}
+\author{Massimiliano Incudini - VR433300}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+    Il seguente documento documenta il lavoro svolto durante la seconda parte del modulo di laboratorio del corso Progettazione di Sistemi Embedded (aa 2018/2019). Il suo obiettivo è illustrare le scelte progettuali effettuate durante lo sviluppo del modulo XTEA nel linguaggio VHDL.
+\end{abstract}
+\section{Introduzione}
+
+Il progetto consiste nello sviluppare un cifrario il cui funzionamento è basato sull'algoritmo eXtended TEA fornito insieme alla consegna.
+\begin{enumerate}
+    \item Il cifrario dovrà essere implementato come modulo VHDL, poi testato automaticamente tramite uno script \code{stimuli.do} per il software proprietario \textsf{\small Modelsim}.
+    \item Il modulo deve essere importato in \textsf{\small Vivado}, simulato tramite un testbench e sintetizzato per la piattaforma \textsf{\small Xilinx PYNQ}.
+    \item I sorgenti SystemC del cifrario dovranno essere sintetizzati tramite \textsf{\small Vivado HLS}, ed il risultato della sintesi confrontato con quello del modulo VHDL.
+\end{enumerate}
+
+\input{modulo.tex}
+
+\input{modelsim.tex}
+
+\input{vivado.tex}
+
+\input{hls.tex}
+
+\end{document}
